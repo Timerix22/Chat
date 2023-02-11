@@ -1,75 +1,56 @@
-﻿using System;
-using System.Net;
-using System.Net.Sockets;
+﻿global using System;
+global using System.Collections;
+global using System.Collections.Generic;
+global using System.Linq;
+global using System.Text;
+global using System.Threading.Tasks;
+global using DTLib.Extensions;
+global using DTLib.Filesystem;
 
 namespace ChatAPI
 {
-    public class ServerInfo
+    public class Client : IClient
     {
-        public string name;
-        public string? ip;
-        public string? domain;
-        public int port;
-        public string publicKey;
-        public bool isIP;
+        public ILogger logger { get; }
+        public ClientConnectionInfo thisClientInfo { get; }
+        public List<ServerConnection> serverConnections { get; } = new();
 
-        public ServerInfo(string ipOrDomain, bool isIP, int port, string name, string publicKey)
+
+        public Client(ILogger logger)
         {
-            this.isIP = isIP;
-            if (isIP) ip = ipOrDomain;
-            else domain = ipOrDomain;
-            this.port = port;
-            this.name = name;
-            this.publicKey = publicKey;
+            this.logger = logger;
+            thisClientInfo = new ClientConnectionInfo(
+                0,
+                "",
+                new string[]{ },
+                new string[]{ });
         }
-    }
-    
-    public class Client
-    {
-        private Socket? serverConnection;
-        
-        public void ConnectToServer(ServerInfo serverInfo)
+
+        public void ConnectToServer(ServerConnectionInfo serverConnectionInfo)
         {
-            if (serverConnection is not null && serverConnection.Connected)
-            {
-                serverConnection.Close();
-            }
-            serverConnection = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
-            IPAddress serverIP;
-            if (serverInfo.isIP)
-                serverIP = IPAddress.Parse(serverInfo.ip!);
-            else serverIP = Dns.GetHostAddresses(serverInfo.domain!)[0];
-            IPEndPoint serverEndpoint=new IPEndPoint(serverIP, serverInfo.port);
-            serverConnection.Connect(serverEndpoint);
+            var serverConnection = new ServerConnection(logger, serverConnectionInfo, thisClientInfo);
+            serverConnections.Add(serverConnection);
         }
 
         public void UpdateOnlineStatus(bool isOnline)
         {
-            throw new NotImplementedException();
+            foreach (ServerConnection connection in serverConnections) 
+                connection.UpdateOnlineStatus(isOnline);
         }
 
         public ClientConnectionInfo[] GetOnlineClients()
         {
-            throw new NotImplementedException();
+            List<ClientConnectionInfo> clients=new List<ClientConnectionInfo>();
+            foreach (var connection in serverConnections)
+            {
+                clients.AddRange(connection.GetOnlineClients());
+            }
+            return clients.ToArray();
         }
 
-        public void ConnectToClient(ClientConnectionInfo clientInfo)
+        public void ConnectToClient(ClientConnectionInfo clientConnectionInfo)
         {
             throw new NotImplementedException();
-        }
-    }
-
-    public class ClientConnectionInfo
-    {
-        public string publicKey;
-        public string[] encriprionAlgorithms;
-        public string[] hashAlgorithms;
-
-        public ClientConnectionInfo(string publicKey, string[] encriprionAlgorithms, string[] hashAlgorithms)
-        {
-            this.publicKey = publicKey;
-            this.encriprionAlgorithms = encriprionAlgorithms;
-            this.hashAlgorithms = hashAlgorithms;
         }
     }
 }

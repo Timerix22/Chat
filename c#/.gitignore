@@ -17,6 +17,7 @@
 .idea/
 .editorconfig
 *.user
+*.DotSettings
 
 #backups
 .old*/
