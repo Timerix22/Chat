@@ -10,7 +10,7 @@
 [Ll]ogs/
 [Pp]ublish/
 
-# IDE files ASDF
+# IDE files
 .vs/
 .vscode/
 .vshistory/
