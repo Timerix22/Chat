@@ -9,11 +9,13 @@ global using DTLib.Filesystem;
 
 namespace ChatAPI
 {
-    public class Client : IClient
+    public class Client
     {
         public ILogger logger { get; }
         public ClientConnectionInfo thisClientInfo { get; }
         public List<ServerConnection> serverConnections { get; } = new();
+        string? privateKey;
+        string? publicKey;
 
 
         public Client(ILogger logger)
@@ -29,6 +31,7 @@ namespace ChatAPI
         public void ConnectToServer(ServerConnectionInfo serverConnectionInfo)
         {
             var serverConnection = new ServerConnection(logger, serverConnectionInfo, thisClientInfo);
+            serverConnection.Connect();
             serverConnections.Add(serverConnection);
         }
 

@@ -12,11 +12,11 @@ public class ServerConnectionInfo
     /// server's public RSA encryption key
     public string publicKey;
 
-    public ServerConnectionInfo(string ipOrDomain, int port, string name, string publicKey)
+    public ServerConnectionInfo(string name, string ipOrDomain, int port, string publicKey)
     {
+        this.name = name;
         this.ipOrDomain = ipOrDomain;
         this.port = port;
-        this.name = name;
         this.publicKey = publicKey;
     }
 

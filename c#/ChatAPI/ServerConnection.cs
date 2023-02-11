@@ -1,6 +1,4 @@
-﻿using System;
-using System.IO;
-using System.Net;
+﻿using System.Net;
 using System.Net.Sockets;
 
 namespace ChatAPI;
@@ -19,40 +17,31 @@ public class ServerConnection
         this.logger = logger;
         this.serverConnectionInfo = serverConnectionInfo;
         this.clientConnectionInfo = clientConnectionInfo;
-        Connect();
     }
 
-    /// <summary>
-    /// Tries connect to server several times
-    /// </summary>
-    /// <param name="connectionAttemtps">how many times </param>
-    private void Connect(int connectionAttemtps=5)
+    public void Connect(int timeoutMiliseconds)
     {
         Disconnect();
-        serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
         DnsEndPoint serverEndpoint = new DnsEndPoint(serverConnectionInfo.ipOrDomain, serverConnectionInfo.port);
-        while (connectionAttemtps-- > 0 || serverSocket.Connected)
-            try
-            { 
-                serverSocket.Connect(serverEndpoint);
-            }
-            catch (SocketException se)
-            {
-                logger.LogWarn(se);
-            }
-
-        if (!serverSocket.Connected)
+        serverSocket = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
+        var rezult = serverSocket.BeginConnect(serverEndpoint, null,null);
+        rezult.AsyncWaitHandle.WaitOne(timeoutMiliseconds, true);
+        if(serverSocket.Connected)
+            serverSocket.EndConnect(rezult);
+        else
+        {
+            Disconnect();
             throw new Exception($"can't connect to server {serverConnectionInfo}");
+        }
     }
 
     public void Disconnect()
     {
-        if (serverSocket != null && serverSocket.Connected)
-        {
-            UpdateOnlineStatus(false);
-            serverSocket.Close();
-            serverSocket = null;
-        }
+        if (serverSocket == null) 
+            return;
+        UpdateOnlineStatus(false);
+        serverSocket.Close();
+        serverSocket = null;
     }
     
     public void UpdateOnlineStatus(bool isOnline)

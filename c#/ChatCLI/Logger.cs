@@ -37,7 +37,7 @@ public class Logger : ILogger
         set => dtlibLogger.WarnLogEnabled = value;
     }
 
-    public bool ErrorLogenabled
+    public bool ErrorLogEnabled
     {
         get => dtlibLogger.ErrorLogenabled;
         set => dtlibLogger.ErrorLogenabled = value;

@@ -8,15 +8,15 @@ public class ClientConnectionInfo
     /// client's public RSA encryption key
     public string publicKey;
     /// encryption algorithms implemented on the client
-    public string[] encriprionAlgorithms;
+    public string[] encryptionAlgorithms;
     /// hash algorithms implemented on the client
     public string[] hashAlgorithms;
 
-    public ClientConnectionInfo(short apiVersion, string publicKey, string[] encriprionAlgorithms, string[] hashAlgorithms)
+    public ClientConnectionInfo(short apiVersion, string publicKey, string[] encryptionAlgorithms, string[] hashAlgorithms)
     {
         this.apiVersion = apiVersion;
         this.publicKey = publicKey;
-        this.encriprionAlgorithms = encriprionAlgorithms;
+        this.encryptionAlgorithms = encryptionAlgorithms;
         this.hashAlgorithms = hashAlgorithms;
     }
 
@@ -25,7 +25,7 @@ public class ClientConnectionInfo
             .Append("ClientConnectionInfo: {\n")
             .Append("apiVersion: ").Append(apiVersion)
             .Append(";\npublicKey: ").Append(publicKey)
-            .Append(";\nencriprionAlgorithms: ").Append(encriprionAlgorithms.MergeToString(','))
+            .Append(";\nencryptionAlgorithms: ").Append(encryptionAlgorithms.MergeToString(','))
             .Append(";\nhashAlgorithms: ").Append(hashAlgorithms.MergeToString(','))
             .Append("\n}").ToString();
 }
